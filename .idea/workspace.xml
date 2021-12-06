@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="75fc6df6-ffe1-4885-a588-c472b5fe2185" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/drones_controller/controller/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/drones_controller/controller/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/drones_controller/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/drones_controller/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/drones_controller/drones_controller/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/drones_controller/drones_controller/settings.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
