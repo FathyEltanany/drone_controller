@@ -144,6 +144,7 @@ class MedicationViewSet(APIView):
 
 
 def log_battery_data():
+    """this func can be used with a scheduler to present a periodic  check loging of batteries"""
     logging.basicConfig(filename="logs.log", level=logging.INFO)
     drones = Drone.objects.all()
     for drone in drones:
