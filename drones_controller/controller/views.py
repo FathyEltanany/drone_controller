@@ -85,7 +85,15 @@ class MedicationViewSet(APIView):
 
         return status, errors
 
-    def get(self, request):
+    def get(self, request,code=None):
+        if code:
+            # first check if drone exists
+            try:
+                medication = Medication.objects.get(code=code)
+            except:
+                return Response({"status": "error"}, status=status.HTTP_404_NOT_FOUND)
+            serializer = MedicationSerializer(medication)
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         medications = Medication.objects.all()
         serializer = MedicationSerializer(medications, many=True)
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
@@ -93,17 +101,50 @@ class MedicationViewSet(APIView):
     def post(self, request):
         serializer = MedicationSerializer(data=request.data)
         if serializer.is_valid():
-            drone_id = serializer.validated_data["drone"].id
-            med_weight = serializer.validated_data["weight"]
-            drone_status, errors = self.check_drone_availability(med_weight, drone_id)
-            if drone_status:
+            if "drone" in serializer.validated_data:
+                drone_id = serializer.validated_data["drone"].id
+                med_weight = serializer.validated_data["weight"]
+                drone_status, errors = self.check_drone_availability(med_weight, drone_id)
+                if drone_status:
+                    serializer.save()
+                    return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+                else:
+                    return Response({
+                        "status": "error",
+                        "data": f"selected drone can't be loaded with more medications because : {errors}"
+                    },
+                        status=status.HTTP_400_BAD_REQUEST)
+            else:
                 serializer.save()
                 return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    "status": "error",
-                    "data": f"selected drone can't be loaded with more medications because : {errors}"
-                },
-                    status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def patch(self, request, code=None):
+        try:
+            item = Medication.objects.get(code=code)
+        except:
+            return Response({"status": "error"}, status=status.HTTP_404_NOT_FOUND)
+
+
+        serializer = MedicationSerializer(item, data=request.data, partial=True)
+        drone_id = serializer.validated_data["drone"].id
+        med_weight = serializer.validated_data["weight"]
+        drone_status, errors = self.check_drone_availability(med_weight, drone_id)
+        if drone_status:
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "status": "error",
+                "data": f"selected drone can't be loaded with more medications because : {errors}"
+            },
+                status=status.HTTP_400_BAD_REQUEST)
+
+
+def log_battery_data():
+    logging.basicConfig(filename="logs.log", level=logging.INFO)
+    drones = Drone.objects.all()
+    for drone in drones:
+        logging.info(f"drone id :{drone.serial_number} battery {drone.battery_capacity}")

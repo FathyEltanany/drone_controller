@@ -36,4 +36,4 @@ class Medication(models.Model):
     name = models.CharField(max_length=50)
     weight = models.IntegerField()
     image = models.ImageField()
-    drone = models.ForeignKey(Drone, on_delete=models.CASCADE)
+    drone = models.ForeignKey(Drone, on_delete=models.CASCADE, blank=True,null=True)
