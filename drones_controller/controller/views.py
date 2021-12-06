@@ -143,3 +143,8 @@ class MedicationViewSet(APIView):
                 status=status.HTTP_400_BAD_REQUEST)
 
 
+def log_battery_data():
+    logging.basicConfig(filename="logs.log", level=logging.INFO)
+    drones = Drone.objects.all()
+    for drone in drones:
+        logging.info(f"drone id :{drone.serial_number} battery {drone.battery_capacity}")
