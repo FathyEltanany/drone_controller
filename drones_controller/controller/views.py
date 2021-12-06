@@ -3,6 +3,7 @@ from .models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+import logging
 
 
 class DroneViewSet(APIView):
@@ -39,7 +40,11 @@ class DroneViewSet(APIView):
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
     def patch(self, request, serial_number=None):
-        item = Drone.objects.get(serial_number=serial_number)
+        try:
+            item = Drone.objects.get(serial_number=serial_number)
+        except:
+            return Response({"status": "error"}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = DroneSerializer(item, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -76,7 +81,6 @@ class MedicationViewSet(APIView):
         if not battery_capacity >= 25:
             battery_flag = False
             errors.append("weak battery")
-
         status = True if (weight_flag and battery_flag) else False
 
         return status, errors
@@ -93,7 +97,7 @@ class MedicationViewSet(APIView):
             med_weight = serializer.validated_data["weight"]
             drone_status, errors = self.check_drone_availability(med_weight, drone_id)
             if drone_status:
-                # serializer.save()
+                serializer.save()
                 return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
             else:
                 return Response({
